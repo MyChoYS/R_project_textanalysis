@@ -1,6 +1,7 @@
 library(RSelenium)
 library(stringr)
 library(tm)
+#java -Dwebdriver.chrome.driver="chromedriver.exe" -jar selenium-server-standalone-4.0.0-alpha-1.jar -port 4445
 remDr <- remoteDriver(remoteServerAddr = "localhost" , port = 4445, browserName = "chrome")
 remDr$open()
 #링커리어 합격 자소서 긁어모으기 
