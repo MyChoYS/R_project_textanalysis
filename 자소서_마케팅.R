@@ -13,9 +13,6 @@ act_spec <- NULL
 
 #####
 
-
-#페이지 이동  클릭이벤트 
-
 repeat{
 for (i in 1:4){
 #endlink <- remDr$findElement(using='xpath',value = "//*[@id='__next']/div[1]/div[2]/div/div/div[2]/div[1]/div/div[2]/div[8]/div/div[1]/button[2]/span")
@@ -90,6 +87,6 @@ Sys.sleep(1)
 }
 
 
-write.csv(all_spec,"output/all_spec.csv")
+#각각 _마케팅으로 저장 ! 
 
 
