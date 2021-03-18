@@ -14,7 +14,7 @@ act_spec <- NULL
 #####
 
 repeat{
-for (i in 1:4){
+for (i in 1:5){
 #endlink <- remDr$findElement(using='xpath',value = "//*[@id='__next']/div[1]/div[2]/div/div/div[2]/div[1]/div/div[2]/div[8]/div/div[1]/button[2]/span")
 Sys.sleep(1)
 for(e in 1:20){
@@ -41,26 +41,22 @@ for(e in 1:20){
   spec <- unlist(spec)
   Sys.sleep(1)
   speclist[1] <- spec[1] #스펙리스트에 학교명 추가
+  
   for (t in spec){ #스펙리스트에 학점 추가
-    if(str_detect(i,"학점")){
+    if(str_detect(t,"학점")){
       speclist[2] <- as.numeric(gsub("[^0-9.]","",t))
+      speclist[3] <- length(spec)- which(str_detect(spec,"학점")) #스펙수 추가
     }else{
-      next
+      speclist[3] <- length(spec) - 2
     }
   }
   Sys.sleep(1)
-  if (spec !=""){
-    speclist[3] <- length(spec)- which(str_detect(spec,"학점")) #스펙수 추가
-  }else{
-    next
-  }
-  
   
   act_spec <- append(act_spec,spec[which(str_detect(spec,"학점"))+1:length(spec)
                                    -which(str_detect(spec,"학점"))]) #스펙 내용 저장 
   
   ##################################
-  Sys.sleep(1)
+  
   #자소서 긁어오기 #speclist[4]에 저장하기 
   webElem1 <- remDr$findElements(using = "css selector","#coverLetterContent > main")
   text <- sapply(webElem1, function(x) x$getElementText())
@@ -71,15 +67,15 @@ for(e in 1:20){
   Sys.sleep(1)
   
 }
-Sys.sleep(1)
 alink <- remDr$findElements(using='xpath',value = paste0("//*[@id='__next']/div[1]/div[2]/div/div/div[2]/div[1]/div/div[2]/div[21]/div/div[1]/button[",i+2,"]/span"))
 Sys.sleep(1)
 remDr$executeScript("arguments[0].click();",alink)
 Sys.sleep(1)
 }
-nextlink <- remDr$findElements(using='xpath',value = "//*[@id='__next']/div[1]/div[2]/div/div/div[2]/div[1]/div/div[2]/div[21]/div/div[1]/button[7]")   
-Sys.sleep(1)
-remDr$executeScript("arguments[0].click();",nextlink)
+
+#nextlink <- remDr$findElements(using='xpath',value = "//*[@id='__next']/div[1]/div[2]/div/div/div[2]/div[1]/div/div[2]/div[21]/div/div[1]/button[7]")   
+#Sys.sleep(1)
+#remDr$executeScript("arguments[0].click();",nextlink)
 Sys.sleep(1)
  
 #if (as.numeric(endlink$getElementText) == 21){
@@ -88,5 +84,12 @@ Sys.sleep(1)
 
 
 #각각 _마케팅으로 저장 ! 
+all_comname
+View(data.frame(all_spec))
+(act_spec)
+
+write.csv(all_comname,"output/all_comname_마케팅.csv")
+write.csv(all_spec,"output/all_spec_마케팅.csv")
+write.csv(act_spec,"output/act_spec_마케팅.csv")
 
 
