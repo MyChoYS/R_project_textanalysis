@@ -9,6 +9,7 @@ remDr$navigate("https://linkareer.com/cover-letter/24709?page=1&role=%EB%A7%88%E
 all_comname <- NULL
 all_spec <- NULL
 act_spec <- NULL
+
 #기업명 긁어오기 
 comElem <- remDr$findElements(using = "css selector", "#__next > div.jss13091.jss13086 > div.MuiContainer-root.jss13099.jss13088.MuiContainer-disableGutters > div > div > div.MuiContainer-root.jss13402.MuiContainer-maxWidthLg > div.jss13720 > div.MuiBox-root.jss13724.jss13716 > div > div > div.MuiBox-root.jss13732 > p")
 
