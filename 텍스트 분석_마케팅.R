@@ -141,7 +141,8 @@ lett <- gsub("■","",lett)
 lett <- gsub("[:cntrl:]","",lett)
 
 words <- extractNoun(lett)
-words[1]
+words[1] %>% filter(nchar >= 2) #워드스에서 처음부터 크기 2이상 단어들만 추려서 동시출현노리자
+
 unlist(words) -> all_words
 all_words[which(nchar(all_words)>=2)] -> all_words #모든 자소서의 단어 
 
