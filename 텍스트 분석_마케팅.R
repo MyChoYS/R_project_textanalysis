@@ -1,8 +1,8 @@
 library(RSelenium);library(stringr);library(tm);library(sys);library(wordcloud);library(wordcloud2);library(tm)
 library(dplyr);library(KoNLP);library(RColorBrewer)
 
-#지원많이한 삼성 계열사
-comname <- read.csv("output/all_comname_삼성.csv", header= T)
+#마케팅 직무에서 가장 많이 지원한 회사명
+comname <- read.csv("output/all_comname_마케팅.csv", header= T)
 comname <- (comname$x)
 comname
 View(comname)
@@ -15,8 +15,8 @@ windowsFonts(dog=windowsFont("THE개이득"))
 wordcloud2(comname,size=0.7,col="random-light",backgroundColor = "white", shape = "circle",
            fontFamily = windowsFont("THE개이득"))
 
-#삼성에서 가장 많이 가지고 있는 스펙확인
-actspec <- read.csv("output/act_spec_삼성.csv")
+#마케팅 직무에서 가장 많이 가지고 있는 스펙확인
+actspec <- read.csv("output/act_spec_마케팅.csv")
 actspec <- actspec$x
 actspec_count <- table(actspec)
 
@@ -55,27 +55,26 @@ actspec[which(as.numeric(gsub("\u6709","",gsub("[[A-z][:space:]]","",gsub("[가-
 
 mostspec <- sort(table(actspec),decreasing = T)
 
-#가장많이보유한 스펙 - 삼성워드클라우드 
-
+#가장많이보유한 스펙 - 마케팅 워드클라우드 
 
 wordcloud2(mostspec,size=0.7,col="random-light",backgroundColor = "white", shape = "circle",
            fontFamily = windowsFont("THE개이득"))
 
 ##############
 #평균학점, 가장많이 보이는 대학교, 자소서 데이터전처리
-int <- read.csv("output/all_spec_삼성.csv")
+int <- read.csv("output/all_spec_마케팅.csv")
 View(int)
 avg <- int$학점
 avg <- avg[!is.na(avg)]
 avg <- mean(avg)
-avg #삼성자소서 평균 학점 3.86
+avg #마케팅자소서 평균 학점 3.75 
 table(int$스펙수)
 avg_spec <- int$스펙수
 avg_spec[which(avg_spec <= 0)] <- NA #0 이하의 스펙들은 결측치로 처리 
 avg_spec <- avg_spec[which(!is.na(avg_spec))]
 avg_spec
 avg_spec <- mean(avg_spec)
-avg_spec #삼성 지원자들은 평균 3.46개의 스펙을 지니고 있다.
+avg_spec #마케팅 지원자들은 평균 4.28개의 스펙을 지니고 있다.
 
 ###학교명 전처리
 univ <- int$학교명
@@ -115,11 +114,11 @@ univ[which(str_detect(univ," "))]
 
 univ <- sort(univ,decreasing = T)
 View(univ)
-
-univ[6] <- NA #공백칸 제거 후 다시 정렬 
-
-
+univ[7] <- NA #공백칸 제거 후 다시 정렬 
 univ <- sort(univ,decreasing = T)
 
 wordcloud2(univ,size=0.7,col="random-light",backgroundColor = "white", shape = "circle",
            fontFamily = windowsFont("THE개이득"))
+
+
+
