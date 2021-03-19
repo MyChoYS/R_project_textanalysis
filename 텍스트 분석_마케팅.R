@@ -1,5 +1,6 @@
 library(RSelenium);library(stringr);library(tm);library(sys);library(wordcloud);library(wordcloud2);library(tm)
 library(dplyr);library(KoNLP);library(RColorBrewer)
+library(stopwords);library(proxy) ; library(qgraph)
 
 #마케팅 직무에서 가장 많이 지원한 회사명
 comname <- read.csv("output/all_comname_마케팅.csv", header= T)
@@ -63,7 +64,11 @@ wordcloud2(mostspec,size=0.7,col="random-light",backgroundColor = "white", shape
 ##############
 #평균학점, 가장많이 보이는 대학교, 자소서 데이터전처리
 int <- read.csv("output/all_spec_마케팅.csv")
-View(int)
+
+int %>%
+  group_by(학교명) %>% summarise(mean_univ = mean(학점)) -> a
+
+
 avg <- int$학점
 avg <- avg[!is.na(avg)]
 avg <- mean(avg)
@@ -119,6 +124,111 @@ univ <- sort(univ,decreasing = T)
 
 wordcloud2(univ,size=0.7,col="random-light",backgroundColor = "white", shape = "circle",
            fontFamily = windowsFont("THE개이득"))
+
+
+####################여기까지 정량평가 대상 ################### 
+
+
+################# 자기소개서 추출, 전처리####################
+stops <- stopwords::stopwords("ko", source = "marimo")
+mystopwords <- readLines("data/stopwords_ko.txt", encoding="UTF-8")
+write(stops,"data/stopwords_ko2.txt") #마리모 스탑워드 추가 stopwords_ko로 합침 
+
+stopwords::stopwords_getlanguages("marimo")
+lett<- int$자기소개서
+lett <- gsub("[:punct:]","",lett)
+lett <- gsub("■","",lett)
+lett <- gsub("[:cntrl:]","",lett)
+
+words <- extractNoun(lett)
+words[1]
+unlist(words) -> all_words
+all_words[which(nchar(all_words)>=2)] -> all_words #모든 자소서의 단어 
+
+all_words[which(all_words=="생각")] <- NA #전처리
+all_words[which(all_words=="하기")] <- NA
+all_words[which(all_words=="때문")] <- NA
+all_words[which(all_words=="회사")] <- NA
+all_words[which(all_words=="기업")] <- NA
+all_words[which(all_words=="삼성")] <- NA
+all_words[which(all_words=="목표")] <- NA
+all_words[which(all_words=="직무")] <- NA
+all_words[which(all_words=="결과")] <- NA
+sort_words<- sort(table(all_words),decreasing = T)
+
+########마케팅 직무 합격 자소서에서 자주 쓰이는 단어들  +  워드클라우드
+wordcloud2(sort_words,size=0.7,col="random-light",backgroundColor = "white", shape = "circle",
+           fontFamily = windowsFont("THE개이득"))
+
+
+View(all_words)
+a <- NULL
+#단어들간의 동시출현 
+for (i in 1:406){
+     a <- append(a,paste(words[i]))
+     Sys.sleep(1)
+}
+a <- gsub("[[:punct:][:cntrl:]]","",a)
+
+cps <- VCorpus(VectorSource(a))
+tdm <- TermDocumentMatrix(cps)
+tdm
+as.matrix(tdm)
+
+cps <- VCorpus(VectorSource(a))
+tdm <- TermDocumentMatrix(cps, 
+                          control=list(wordLengths = c(1, Inf))) ## c(1, Inf) -> 1글자부터 무한대로 받아옴
+
+tdm
+(m <- as.matrix(tdm))
+
+rowSums(m)
+colSums(m)
+
+com <- m %*% t(m)  #동시출현 개수
+com
+View
+
+qgraph(com, labels=rownames(com), diag=F,  #동시출현
+       layout='spring',  edge.color='blue',
+       threshold=3, #작은 연결 날려버리기 
+       vsize=log(diag(com)*800))
+
+
+
+
+
+
+
+
+
+
+
+######## 전체 단어 유사도 
+all_word <- Corpus(VectorSource(lett))
+word <- TermDocumentMatrix(all_word, control=list( #필요없는 것들 제거하면서 매트릭스화
+  removePunctuation = T, 
+  removeNumbers = T,
+  wordLengths = c(1, Inf),
+  stopwords=mystopwords)) #유사도분석활용 
+as.matrix(all_word)
+
+
+
+#자소서에서 쓰이는 단어들의 유사도 분석
+word <- TermDocumentMatrix(all_words, control=list( #필요없는 것들 제거하면서 매트릭스화
+  removePunctuation = T, 
+  removeNumbers = T,
+  wordLengths = c(1, Inf),
+  stopwords=mystopwords)) #유사도분석활용 
+
+View(as.matrix(word))
+word 
+
+unlist(word)
+
+
+
 
 
 
