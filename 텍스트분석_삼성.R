@@ -55,7 +55,8 @@ actspec[which(as.numeric(gsub("\u6709","",gsub("[[A-z][:space:]]","",gsub("[가-
 
 mostspec <- sort(table(actspec),decreasing = T)
 
-#가장많이보유한 스펙 - 데이터 워드클라우드 
+#가장많이보유한 스펙 - 삼성워드클라우드 
+
 
 wordcloud2(mostspec,size=0.7,col="random-light",backgroundColor = "white", shape = "circle",
            fontFamily = windowsFont("THE개이득"))
@@ -114,7 +115,10 @@ univ[which(str_detect(univ," "))]
 
 univ <- sort(univ,decreasing = T)
 View(univ)
-univ[7] <- NA #공백칸 제거 후 다시 정렬 
+
+univ[6] <- NA #공백칸 제거 후 다시 정렬 
+
+
 univ <- sort(univ,decreasing = T)
 
 wordcloud2(univ,size=0.7,col="random-light",backgroundColor = "white", shape = "circle",
