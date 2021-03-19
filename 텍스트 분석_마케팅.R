@@ -5,7 +5,7 @@ library(dplyr);library(KoNLP);library(RColorBrewer)
 comname <- read.csv("output/all_comname_마케팅.csv", header= T)
 comname <- (comname$x)
 comname
-
+View(comname)
 comname <- table(comname)
 
 sort(comname,decreasing = T)[1:10] #상위 10개 
@@ -52,7 +52,6 @@ actspec[which(str_detect(actspec,"sky"))] <- NA
 actspec[which(as.numeric(gsub("\u6709","",gsub("[[A-z][:space:]]","",gsub("[가-힣:() ]","",actspec[which(str_detect(gsub("[:space:]","",actspec),"토익"))])))) > 900 )] <- "TOEIC 900 이상"
 actspec[which(as.numeric(gsub("\u6709","",gsub("[[A-z][:space:]]","",gsub("[가-힣:() ]","",actspec[which(str_detect(gsub("[:space:]","",actspec),"토익"))])))) > 800 )] <- "TOEIC 800 이상"
 
-actspec[which(str_detect(actspec,"토익"))]
 
 mostspec <- sort(table(actspec),decreasing = T)
 
@@ -64,6 +63,7 @@ wordcloud2(mostspec,size=0.7,col="random-light",backgroundColor = "white", shape
 ##############
 #평균학점, 가장많이 보이는 대학교, 자소서 데이터전처리
 int <- read.csv("output/all_spec_마케팅.csv")
+View(int)
 avg <- int$학점
 avg <- avg[!is.na(avg)]
 avg <- mean(avg)
