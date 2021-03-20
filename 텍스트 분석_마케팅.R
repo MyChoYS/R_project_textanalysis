@@ -141,10 +141,9 @@ lett <- gsub("■","",lett)
 lett <- gsub("[:cntrl:]","",lett)
 
 words <- extractNoun(lett)
-words[1] %>% filter(nchar >= 2) #words에서 처음부터 크기 2이상 단어들만 추려서 동시출현노리자
 words[[1]][1]
-wordss <- NULL
-twowords <- NULL #두글자 이상의 단어 
+wordss <- NULL #두글자 이상 단어 임시저장소
+twowords <- NULL #두글자 이상의 단어만 추출해서 저장, 동시출현 할것 
 
 for (i in words){
   for (t in i){
@@ -156,6 +155,33 @@ for (i in words){
    twowords <- append(twowords,wordss) 
    wordss <- NULL
 }
+
+twowords[which(str_detect(twowords[1],"최고"))]
+
+univ[which(str_detect(univ,"건국"))] <- "건동홍"
+twowordss <- NULL
+
+for (i in twowords){
+    i[which(str_detect(i,"생각"))] <- NA #전처리
+    i[which(str_detect(i,"하기"))] <- NA
+    i[which(str_detect(i,"때문"))] <- NA
+    i[which(str_detect(i,"회사"))] <- NA
+    i[which(str_detect(i,"기업"))] <- NA
+    i[which(str_detect(i,"삼성"))] <- NA
+    i[which(str_detect(i,"목표"))] <- NA
+    i[which(str_detect(i,"직무"))] <- NA
+    i[which(str_detect(i,"결과"))] <- NA
+    i[which(str_detect(i,"하시오"))] <- NA
+    i[which(str_detect(i,"1000"))] <- NA
+    i <- i[which(!is.na(i))]
+    twowordss <- append(twowordss,list(i))
+  
+}
+
+twowords
+
+
+
 
 warnings()
 
@@ -171,6 +197,7 @@ all_words[which(all_words=="삼성")] <- NA
 all_words[which(all_words=="목표")] <- NA
 all_words[which(all_words=="직무")] <- NA
 all_words[which(all_words=="결과")] <- NA
+
 sort_words<- sort(table(all_words),decreasing = T)
 
 ########마케팅 직무 합격 자소서에서 자주 쓰이는 단어들  +  워드클라우드
@@ -182,7 +209,7 @@ View(all_words)
 a <- NULL
 #단어들간의 동시출현 
 for (i in 1:406){
-     a <- append(a,paste(twowords[i]))
+     a <- append(a,paste(twowordss[i]))
      
 }
 a <- gsub("[[:punct:][:cntrl:]]","",a)
@@ -190,29 +217,64 @@ a
 View(a)
 View(twowords)
 
+###동시출현 시각화에 사용
 cps <- VCorpus(VectorSource(a))
 tdm <- TermDocumentMatrix(cps)
 tdm
 as.matrix(tdm)
 
-cps <- VCorpus(VectorSource(a))
-tdm <- TermDocumentMatrix(cps, 
-                          control=list(wordLengths = c(1, Inf))) ## c(1, Inf) -> 1글자부터 무한대로 받아옴
+#유사도 (코사인,유클리드) 분석 
+dtm <- DocumentTermMatrix(cps)
+as.matrix(dtm)
+inspect(dtm)
+m2 <- as.matrix(dtm)
+com <- m2 %*% t(m2)  
+com
+dist(com, method = "cosine")
+which.min(dist(com, method = "cosine"))
+com[2]
+
+num <- 0
+count <- 0
+for (i in 1:406){
+  num <- num + i
+  if (num >= 19390){
+    break
+  }
+  count <- count + 1
+}
+19503-19390
+19503-197
+19390-19306
+309-196
+int$자기소개서[196]
+int$자기소개서[84]
+com[which.min(dist(com, method = "Euclidean"))]
+which.min(dist(com, method = "cosine")) #유사도 분석으로 얻는 것은 쓰잘데기 없다.
+
+
+#cps <- VCorpus(VectorSource(a))
+#tdm <- TermDocumentMatrix(cps, 
+#                         control=list(wordLengths = c(1, Inf))) ## c(1, Inf) -> 1글자부터 무한대로 받아옴'''
 
 tdm
-(m <- as.matrix(tdm))
+m <- as.matrix(tdm)
 
-rowSums(m)
+word.count <- rowSums(m)
+word.order <- order(word.count,decreasing = T)
+freq.words <- m[word.order[1:20],]
+co.matrix <- freq.words %*% t(freq.words)
+View(co.matrix)
+
 colSums(m)
 
-com <- m %*% t(m)  #동시출현 개수
-com
-View
+#com <- m %*% t(m)  #동시출현 개수
+#com
 
-qgraph(com, labels=rownames(com), diag=F,  #동시출현
+
+qgraph(co.matrix, labels=rownames(co.matrix), diag=F,  #동시출현
        layout='spring',  edge.color='blue',
-       threshold=3, #작은 연결 날려버리기 
-       vsize=log(diag(com)*800))
+       vsize=log(diag(co.matrix)*2))
 
 
 
@@ -223,9 +285,8 @@ qgraph(com, labels=rownames(com), diag=F,  #동시출현
 
 
 
-
-######## 전체 단어 유사도 
-all_word <- Corpus(VectorSource(lett))
+######## 전체 단어 유사도  ##a사용
+all_word <- Corpus(VectorSource(a))
 word <- TermDocumentMatrix(all_word, control=list( #필요없는 것들 제거하면서 매트릭스화
   removePunctuation = T, 
   removeNumbers = T,
