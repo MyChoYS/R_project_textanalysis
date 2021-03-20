@@ -126,7 +126,9 @@ wordcloud2(univ,size=0.7,col="random-light",backgroundColor = "white", shape = "
            fontFamily = windowsFont("THE개이득"))
 
 
-####################여기까지 정량평가 대상 ################### 
+####################여기까지 정량평가 대상 ########################################### 
+
+
 
 
 ################# 자기소개서 추출, 전처리####################
@@ -140,45 +142,10 @@ lett <- gsub("[:punct:]","",lett)
 lett <- gsub("■","",lett)
 lett <- gsub("[:cntrl:]","",lett)
 
-words <- extractNoun(lett)
+words <- extractNoun(lett) #명사추출 
 words[[1]][1]
-wordss <- NULL #두글자 이상 단어 임시저장소
-twowords <- NULL #두글자 이상의 단어만 추출해서 저장, 동시출현 할것 
 
-for (i in words){
-  for (t in i){
-    if (nchar(t) >= 2){
-      wordss <- append(wordss,t)
-    }
-  }
-   wordss <- list(wordss)  
-   twowords <- append(twowords,wordss) 
-   wordss <- NULL
-}
 
-twowords[which(str_detect(twowords[1],"최고"))]
-
-univ[which(str_detect(univ,"건국"))] <- "건동홍"
-twowordss <- NULL
-
-for (i in twowords){
-    i[which(str_detect(i,"생각"))] <- NA #전처리
-    i[which(str_detect(i,"하기"))] <- NA
-    i[which(str_detect(i,"때문"))] <- NA
-    i[which(str_detect(i,"회사"))] <- NA
-    i[which(str_detect(i,"기업"))] <- NA
-    i[which(str_detect(i,"삼성"))] <- NA
-    i[which(str_detect(i,"목표"))] <- NA
-    i[which(str_detect(i,"직무"))] <- NA
-    i[which(str_detect(i,"결과"))] <- NA
-    i[which(str_detect(i,"하시오"))] <- NA
-    i[which(str_detect(i,"1000"))] <- NA
-    i <- i[which(!is.na(i))]
-    twowordss <- append(twowordss,list(i))
-  
-}
-
-twowords
 
 
 
@@ -199,15 +166,55 @@ all_words[which(all_words=="직무")] <- NA
 all_words[which(all_words=="결과")] <- NA
 
 sort_words<- sort(table(all_words),decreasing = T)
-
+ mostwords <- rownames(sort_words[1:20])
+ 
 ########마케팅 직무 합격 자소서에서 자주 쓰이는 단어들  +  워드클라우드
 wordcloud2(sort_words,size=0.7,col="random-light",backgroundColor = "white", shape = "circle",
            fontFamily = windowsFont("THE개이득"))
 
 
 View(all_words)
+
+######################동시출현 
+wordss <- NULL #두글자 이상 단어 임시저장소
+twowords <- NULL #두글자 이상의 단어만 추출해서 저장, 동시출현 할것 
+
+for (i in words){
+  for (t in i){
+    if (nchar(t) >= 2){
+      wordss <- append(wordss,t)
+    }
+  }
+   wordss <- list(wordss)  
+   twowords <- append(twowords,wordss) 
+   wordss <- NULL
+}
+
+
+twowordss <- NULL
+
+#동시출현 전처리 
+for (i in twowords){
+    i[which(str_detect(i,"생각"))] <- NA #전처리
+    i[which(str_detect(i,"하기"))] <- NA
+    i[which(str_detect(i,"때문"))] <- NA
+    i[which(str_detect(i,"회사"))] <- NA
+    i[which(str_detect(i,"기업"))] <- NA
+    i[which(str_detect(i,"삼성"))] <- NA
+    i[which(str_detect(i,"목표"))] <- NA
+    i[which(str_detect(i,"직무"))] <- NA
+    i[which(str_detect(i,"결과"))] <- NA
+    i[which(str_detect(i,"하시오"))] <- NA
+    i[which(str_detect(i,"1000"))] <- NA
+    i <- i[which(!is.na(i))]
+    twowordss <- append(twowordss,list(i))
+  
+}
+
+twowords
+
+#단어들간의 동시출현########
 a <- NULL
-#단어들간의 동시출현 
 for (i in 1:406){
      a <- append(a,paste(twowordss[i]))
      
@@ -222,35 +229,6 @@ cps <- VCorpus(VectorSource(a))
 tdm <- TermDocumentMatrix(cps)
 tdm
 as.matrix(tdm)
-
-#유사도 (코사인,유클리드) 분석 
-dtm <- DocumentTermMatrix(cps)
-as.matrix(dtm)
-inspect(dtm)
-m2 <- as.matrix(dtm)
-com <- m2 %*% t(m2)  
-com
-dist(com, method = "cosine")
-which.min(dist(com, method = "cosine"))
-com[2]
-
-num <- 0
-count <- 0
-for (i in 1:406){
-  num <- num + i
-  if (num >= 19390){
-    break
-  }
-  count <- count + 1
-}
-19503-19390
-19503-197
-19390-19306
-309-196
-int$자기소개서[196]
-int$자기소개서[84]
-com[which.min(dist(com, method = "Euclidean"))]
-which.min(dist(com, method = "cosine")) #유사도 분석으로 얻는 것은 쓰잘데기 없다.
 
 
 #cps <- VCorpus(VectorSource(a))
@@ -280,36 +258,55 @@ qgraph(co.matrix, labels=rownames(co.matrix), diag=F,  #동시출현
 
 
 
+#유사도 (코사인,유클리드) 분석 
+dtm <- DocumentTermMatrix(cps)
+as.matrix(dtm)
+inspect(dtm)
+m2 <- as.matrix(dtm)
+com <- m2 %*% t(m2)  
+com
+dist(com, method = "cosine")
+which.min(dist(com, method = "cosine"))
+com[2]
+
+num <- 0
+count <- 0
+for (i in 1:406){
+  num <- num + i
+  if (num >= 19390){
+    break
+  }
+  count <- count + 1
+}
+19503-19390
+19503-197
+19390-19306
+309-196
+int$자기소개서[196]
+int$자기소개서[84]
+com[which.min(dist(com, method = "Euclidean"))]
+which.min(dist(com, method = "cosine")) #유사도 분석으로 얻는 것은 쓰잘데기 없다.
+#유사도분석으로 정형화된 합격자소서말고, 가장 많이 쓰인 단어들을 포함한 자소서를 찾아보자.
 
 
 
 
+#########가장 자주 쓰이는 단어 20개를 가장 많이 포함하고 있는 대표자소서 추출 
+wordcount <- NULL
+list(sum(str_count(qwe,mostwords)))
 
-######## 전체 단어 유사도  ##a사용
-all_word <- Corpus(VectorSource(a))
-word <- TermDocumentMatrix(all_word, control=list( #필요없는 것들 제거하면서 매트릭스화
-  removePunctuation = T, 
-  removeNumbers = T,
-  wordLengths = c(1, Inf),
-  stopwords=mystopwords)) #유사도분석활용 
-as.matrix(all_word)
+for (i in 1:406){
+  wordcount <- append(wordcount,list(sum(str_count(twowordss[i],mostwords))))
+}
 
-
-
-#자소서에서 쓰이는 단어들의 유사도 분석
-word <- TermDocumentMatrix(all_words, control=list( #필요없는 것들 제거하면서 매트릭스화
-  removePunctuation = T, 
-  removeNumbers = T,
-  wordLengths = c(1, Inf),
-  stopwords=mystopwords)) #유사도분석활용 
-
-View(as.matrix(word))
-word 
-
-unlist(word)
+wordcount[which.max(wordcount)]
+int$자기소개서[which.max(wordcount)]
+int$자기소개서[219]
 
 
 
+
+View(int)
 
 
 
