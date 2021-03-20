@@ -141,7 +141,23 @@ lett <- gsub("■","",lett)
 lett <- gsub("[:cntrl:]","",lett)
 
 words <- extractNoun(lett)
-words[1] %>% filter(nchar >= 2) #워드스에서 처음부터 크기 2이상 단어들만 추려서 동시출현노리자
+words[1] %>% filter(nchar >= 2) #words에서 처음부터 크기 2이상 단어들만 추려서 동시출현노리자
+words[[1]][1]
+wordss <- NULL
+twowords <- NULL #두글자 이상의 단어 
+
+for (i in words){
+  for (t in i){
+    if (nchar(t) >= 2){
+      wordss <- append(wordss,t)
+    }
+  }
+   wordss <- list(wordss)  
+   twowords <- append(twowords,wordss) 
+   wordss <- NULL
+}
+
+warnings()
 
 unlist(words) -> all_words
 all_words[which(nchar(all_words)>=2)] -> all_words #모든 자소서의 단어 
@@ -166,10 +182,13 @@ View(all_words)
 a <- NULL
 #단어들간의 동시출현 
 for (i in 1:406){
-     a <- append(a,paste(words[i]))
-     Sys.sleep(1)
+     a <- append(a,paste(twowords[i]))
+     
 }
 a <- gsub("[[:punct:][:cntrl:]]","",a)
+a
+View(a)
+View(twowords)
 
 cps <- VCorpus(VectorSource(a))
 tdm <- TermDocumentMatrix(cps)
