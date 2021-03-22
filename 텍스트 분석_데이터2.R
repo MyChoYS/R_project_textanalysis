@@ -55,7 +55,7 @@ actspec[which(as.numeric(gsub("\u6709","",gsub("[[A-z][:space:]]","",gsub("[가-
 
 
 mostspec <- sort(table(actspec),decreasing = T)
-
+View(mostspec)
 #가장많이보유한 스펙 - 마케팅 워드클라우드 
 
 wordcloud2(mostspec,size=0.7,col="random-light",backgroundColor = "white", shape = "circle",
@@ -215,7 +215,7 @@ twowords
 
 #단어들간의 동시출현########
 a <- NULL
-for (i in 1:406){
+for (i in 1:59){
      a <- append(a,paste(twowordss[i]))
      
 }
@@ -295,7 +295,7 @@ which.min(dist(com, method = "cosine")) #유사도 분석으로 얻는 것은 �
 wordcount <- NULL
 list(sum(str_count(qwe,mostwords)))
 
-for (i in 1:406){
+for (i in 1:59){
   wordcount <- append(wordcount,list(sum(str_count(twowordss[i],mostwords))))
 }
 
