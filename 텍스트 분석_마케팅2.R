@@ -17,7 +17,7 @@ wordcloud2(comname,size=0.7,col="random-light",backgroundColor = "white", shape 
            fontFamily = windowsFont("THE개이득"))
 
 #마케팅 직무에서 가장 많이 가지고 있는 스펙확인
-actspec <- read.csv("output/act_spec_삼성.csv")
+actspec <- read.csv("output/act_spec_마케팅.csv")
 actspec <- actspec$x
 actspec_count <- table(actspec)
 
@@ -55,7 +55,7 @@ actspec[which(as.numeric(gsub("\u6709","",gsub("[[A-z][:space:]]","",gsub("[가-
 
 
 mostspec <- sort(table(actspec),decreasing = T)
-View(mostspec)
+
 #가장많이보유한 스펙 - 마케팅 워드클라우드 
 
 wordcloud2(mostspec,size=0.7,col="random-light",backgroundColor = "white", shape = "circle",
@@ -63,7 +63,7 @@ wordcloud2(mostspec,size=0.7,col="random-light",backgroundColor = "white", shape
 
 ##############
 #평균학점, 가장많이 보이는 대학교, 자소서 데이터전처리
-int <- read.csv("output/all_spec_삼성.csv")
+int <- read.csv("output/all_spec_마케팅.csv")
 
 int %>%
   group_by(학교명) %>% summarise(mean_univ = mean(학점)) -> a
@@ -166,30 +166,7 @@ all_words[which(all_words=="직무")] <- NA
 all_words[which(all_words=="결과")] <- NA
 
 sort_words<- sort(table(all_words),decreasing = T)
-View(sort_words)
  mostwords <- rownames(sort_words[1:20])
- 
- 
- #########가장 자주 쓰이는 단어 20개를 가장 많이 포함하고 있는 대표자소서 추출 
- wordcount <- NULL
- list(sum(str_count(qwe,mostwords)))
- 
- for (i in 1:1221){
-   wordcount <- append(wordcount,list(sum(str_count(twowordss[i],mostwords))))
- }
- 
- wordcount[which.max(wordcount)]
- int$자기소개서[which.max(wordcount)]
-
- int$학교명[358]
- 
- 
- 
- 
- View(int)
- 
- 
- 
  
 ########마케팅 직무 합격 자소서에서 자주 쓰이는 단어들  +  워드클라우드
 wordcloud2(sort_words,size=0.7,col="random-light",backgroundColor = "white", shape = "circle",
@@ -238,7 +215,7 @@ twowords
 
 #단어들간의 동시출현########
 a <- NULL
-for (i in 1:1221){
+for (i in 1:406){
      a <- append(a,paste(twowordss[i]))
      
 }
@@ -314,7 +291,22 @@ which.min(dist(com, method = "cosine")) #유사도 분석으로 얻는 것은 �
 
 
 
+#########가장 자주 쓰이는 단어 20개를 가장 많이 포함하고 있는 대표자소서 추출 
+wordcount <- NULL
+list(sum(str_count(qwe,mostwords)))
 
+for (i in 1:406){
+  wordcount <- append(wordcount,list(sum(str_count(twowordss[i],mostwords))))
+}
+
+wordcount[which.max(wordcount)]
+int$자기소개서[which.max(wordcount)]
+int$자기소개서[219]
+
+
+
+
+View(int)
 
 
 
